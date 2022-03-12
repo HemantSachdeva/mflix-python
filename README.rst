@@ -179,7 +179,7 @@ To start MFlix, run the following command:
   python run.py
 
 
-And then point your browser to `http://localhost:5000/<http://localhost:5000/>`_.
+And then point your browser to `http://localhost:5000/ <http://localhost:5000/>`_.
 
 
 Running the Unit Tests
