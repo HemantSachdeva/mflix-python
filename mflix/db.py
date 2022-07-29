@@ -563,17 +563,7 @@ def most_active_commenters():
     # Return the 20 users who have commented the most on MFlix.
     pipeline = [
         {
-            "$group": {
-                "_id": "$email",
-                "count": {
-                    "$sum": 1
-                }
-            }
-        },
-        {
-            "$sort": {
-                "count": -1
-            }
+            "$sortByCount": "$email"
         },
         {
             "$limit": 20
