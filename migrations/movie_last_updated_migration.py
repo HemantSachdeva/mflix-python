@@ -2,6 +2,8 @@ from pymongo import MongoClient, UpdateOne
 from pymongo.errors import InvalidOperation
 from bson import ObjectId
 import dateutil.parser as parser
+from dotenv import load_dotenv
+from os import getenv
 
 """
 Ticket: Migration
@@ -13,8 +15,10 @@ The parser.parse() method can transform date strings into ISODate objects for
 us. We just need to make sure the correct operations are sent to MongoDB!
 """
 
+load_dotenv()
+
 # ensure you update your host information below!
-host = "mongodb://localhost:27017"
+host = getenv("MFLIX_DB_URI")
 
 # don't update this information
 MFLIX_DB_NAME = "sample_mflix"
@@ -25,8 +29,8 @@ mflix = MongoClient(host)[MFLIX_DB_NAME]
 # checks that its type is a string
 # a projection is not required, but may help reduce the amount of data sent
 # over the wire!
-predicate = {"some_field": {"$some_operator": "some_expression"}}
-projection = None
+predicate = {"lastupdated": {"$exists": 1, "$type": "string"}}
+projection = {"lastupdated": 1}
 
 cursor = mflix.movies.find(predicate, projection)
 
@@ -50,7 +54,7 @@ try:
     # the new ISODate() type
     bulk_updates = [UpdateOne(
         {"_id": movie.get("doc_id")},
-        {"$some_update_operator": {"some_field_to_update"}}
+        {"$set": {"lastupdated": movie.get("lastupdated")}}
     ) for movie in movies_to_migrate]
 
     # here's where the bulk operation is sent to MongoDB
